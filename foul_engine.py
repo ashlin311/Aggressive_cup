@@ -138,62 +138,62 @@ def _make_team(name: str, emoji: str, tactic: str, players_data: list) -> Team:
 
 
 DEFAULT_TEAMS: list[Team] = [
-    _make_team("Argentina", "🔵", "The Enforcer", [
+    _make_team("Argentina", "https://flagcdn.com/w160/ar.png", "The Enforcer", [
         ("El Carnicero",    80, 85, 80, 70, 78),
         ("Ramos Jr.",       75, 82, 88, 72, 72),
         ("Maradona's Ghost", 70, 78, 90, 68, 75),
     ]),
-    _make_team("Brazil", "🟡", "The Diver", [
+    _make_team("Brazil", "https://flagcdn.com/w160/br.png", "The Diver", [
         ("Rivaldo II",      65, 68, 95, 75, 58),
         ("Neymar's Heir",   60, 72, 98, 72, 55),
         ("O Açougueiro",    70, 70, 88, 78, 62),
     ]),
-    _make_team("Germany", "⚫", "The Intimidator", [
+    _make_team("Germany", "https://flagcdn.com/w160/de.png", "The Intimidator", [
         ("Der Schlächter",  82, 92, 38, 88, 72),
         ("Herr Ellbogen",   85, 90, 42, 85, 70),
         ("Das Biest",       78, 88, 40, 82, 68),
     ]),
-    _make_team("France", "🔵", "The Enforcer", [
+    _make_team("France", "https://flagcdn.com/w160/fr.png", "The Enforcer", [
         ("Le Boucher",      72, 78, 68, 82, 65),
         ("Zidane's Rage",   75, 75, 72, 78, 70),
         ("Monsieur Coude",  68, 72, 70, 80, 62),
     ]),
-    _make_team("Spain", "🔴", "The Diver", [
+    _make_team("Spain", "https://flagcdn.com/w160/es.png", "The Diver", [
         ("El Simulador",    58, 62, 88, 78, 52),
         ("Don Codazo",      62, 68, 85, 75, 58),
         ("Señor Pisotón",   60, 65, 82, 72, 55),
     ]),
-    _make_team("England", "⚪", "The Chopper", [
+    _make_team("England", "https://flagcdn.com/w160/gb-eng.png", "The Chopper", [
         ("The Butcher",     92, 72, 48, 88, 82),
         ("Mad Dog",         90, 68, 52, 85, 85),
         ("Iron Shin",       88, 70, 45, 82, 78),
     ]),
-    _make_team("Portugal", "🔴", "The Diver", [
+    _make_team("Portugal", "https://flagcdn.com/w160/pt.png", "The Diver", [
         ("Pepe's Protégé",  72, 78, 92, 70, 62),
         ("O Mergulhador",   68, 75, 90, 72, 58),
         ("Senhor Cotovelo", 70, 72, 88, 68, 60),
     ]),
-    _make_team("Netherlands", "🟠", "The Intimidator", [
+    _make_team("Netherlands", "https://flagcdn.com/w160/nl.png", "The Intimidator", [
         ("De Slager",       88, 82, 52, 82, 78),
         ("Van Stomp",       85, 80, 55, 80, 75),
         ("Meneer Elleboog", 82, 78, 58, 78, 72),
     ]),
-    _make_team("Croatia", "🔴", "The Enforcer", [
+    _make_team("Croatia", "https://flagcdn.com/w160/hr.png", "The Enforcer", [
         ("Čekić",           78, 88, 58, 82, 72),
         ("Nož",             75, 85, 62, 80, 70),
         ("Grubi",           72, 82, 55, 78, 68),
     ]),
-    _make_team("Morocco", "🔴", "The Time Waster", [
+    _make_team("Morocco", "https://flagcdn.com/w160/ma.png", "The Time Waster", [
         ("Le Mur",          82, 72, 62, 92, 68),
         ("Bouclier",        78, 70, 65, 90, 65),
         ("Forteresse",      80, 68, 68, 88, 62),
     ]),
-    _make_team("Italy", "🔵", "The Diver", [
+    _make_team("Italy", "https://flagcdn.com/w160/it.png", "The Diver", [
         ("Il Macellaio",    72, 92, 78, 75, 72),
         ("Signor Gomitata", 68, 90, 82, 72, 68),
         ("Lo Squalo",       70, 88, 80, 78, 70),
     ]),
-    _make_team("Japan", "🔴", "The Time Waster", [
+    _make_team("Japan", "https://flagcdn.com/w160/jp.png", "The Time Waster", [
         ("Tekken",          58, 62, 42, 95, 42),
         ("Jūdō",            55, 58, 48, 92, 38),
         ("Karate Kid",      52, 55, 45, 98, 40),

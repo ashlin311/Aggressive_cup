@@ -143,7 +143,6 @@ CUSTOM_CSS = """
     box-shadow: inset 0 0 0 1px var(--primary) !important;
 }
 .team-selector label span {
-    white-space: pre-line !important;
     display: block !important;
     font-size: 13px !important;
     font-weight: 800 !important;
@@ -155,11 +154,31 @@ CUSTOM_CSS = """
 .team-selector label:has(input:checked) span {
     color: #fff !important;
 }
-/* Style the flag (first line) */
-.team-selector label span::first-line {
-    font-size: 32px !important;
-    line-height: 1.5 !important;
+.team-selector label::before {
+    content: "";
+    display: block;
+    width: 64px;
+    height: 42px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-bottom: 12px;
+    border: 1px solid var(--divider);
+    border-radius: 4px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="42" viewBox="0 0 64 42"><rect width="64" height="42" fill="%23222" stroke="%23333" stroke-width="1"/><path d="M24 10 L24 32 M24 12 L44 17 L24 22 Z" stroke="%23dc2626" stroke-width="2" fill="%23991b1b"/></svg>');
 }
+.team-selector label:nth-child(1)::before { background-image: url('https://flagcdn.com/w160/ar.png') !important; }
+.team-selector label:nth-child(2)::before { background-image: url('https://flagcdn.com/w160/br.png') !important; }
+.team-selector label:nth-child(3)::before { background-image: url('https://flagcdn.com/w160/de.png') !important; }
+.team-selector label:nth-child(4)::before { background-image: url('https://flagcdn.com/w160/fr.png') !important; }
+.team-selector label:nth-child(5)::before { background-image: url('https://flagcdn.com/w160/es.png') !important; }
+.team-selector label:nth-child(6)::before { background-image: url('https://flagcdn.com/w160/gb-eng.png') !important; }
+.team-selector label:nth-child(7)::before { background-image: url('https://flagcdn.com/w160/pt.png') !important; }
+.team-selector label:nth-child(8)::before { background-image: url('https://flagcdn.com/w160/nl.png') !important; }
+.team-selector label:nth-child(9)::before { background-image: url('https://flagcdn.com/w160/hr.png') !important; }
+.team-selector label:nth-child(10)::before { background-image: url('https://flagcdn.com/w160/ma.png') !important; }
+.team-selector label:nth-child(11)::before { background-image: url('https://flagcdn.com/w160/it.png') !important; }
+.team-selector label:nth-child(12)::before { background-image: url('https://flagcdn.com/w160/jp.png') !important; }
 .selection-counter {
     text-align: center;
     font-size: 13px;
@@ -564,6 +583,14 @@ CUSTOM_CSS = """
 # HTML builder functions
 # ---------------------------------------------------------------------------
 
+def render_flag(emoji_or_url, height="20px"):
+    if not emoji_or_url:
+        return ""
+    if emoji_or_url.startswith("http"):
+        return f'<img src="{emoji_or_url}" style="height:{height};border-radius:2px;border:1px solid #333;display:inline-block;vertical-align:middle;margin-top:-2px;">'
+    return emoji_or_url
+
+
 def build_scoreboard_html(home_name, home_emoji, away_name, away_emoji,
                           h_score, a_score, minute, top_home, top_away,
                           is_live=True, round_label=""):
@@ -577,7 +604,7 @@ def build_scoreboard_html(home_name, home_emoji, away_name, away_emoji,
         {round_html}
         <div style="display:flex;justify-content:center;align-items:center;gap:40px;">
             <div style="text-align:center;">
-                <div style="font-size:2.5em;">{home_emoji}</div>
+                <div style="height:48px;display:flex;justify-content:center;align-items:center;margin-bottom:8px;">{render_flag(home_emoji, height="36px")}</div>
                 <div class="team-name-display">{home_name}</div>
                 <div style="color:#6b7280;font-size:12px;margin-top:4px;font-weight:700;">⭐ {top_home or '—'}</div>
             </div>
@@ -586,7 +613,7 @@ def build_scoreboard_html(home_name, home_emoji, away_name, away_emoji,
                 <div style="color:#6b7280;margin-top:8px;font-size:12px;font-weight:700;letter-spacing:0.05em;">⏱ {clock}  {live_html}</div>
             </div>
             <div style="text-align:center;">
-                <div style="font-size:2.5em;">{away_emoji}</div>
+                <div style="height:48px;display:flex;justify-content:center;align-items:center;margin-bottom:8px;">{render_flag(away_emoji, height="36px")}</div>
                 <div class="team-name-display">{away_name}</div>
                 <div style="color:#6b7280;font-size:12px;margin-top:4px;font-weight:700;">⭐ {top_away or '—'}</div>
             </div>
@@ -673,7 +700,7 @@ def build_commentary_html(commentary_log):
 
         # Append team and player details to title if present
         if player:
-            team_str = f" ({team_emoji} {team_name})" if team_name else ""
+            team_str = f" ({render_flag(team_emoji, height='14px')} {team_name})" if team_name else ""
             title = f"{title} — {player}{team_str}"
 
         cards_html.append(f"""
@@ -723,8 +750,8 @@ def build_stats_html(home_name, home_emoji, away_name, away_emoji, h_stats, a_st
         <thead>
             <tr>
                 <th></th>
-                <th>{home_emoji} {home_name}</th>
-                <th>{away_name} {away_emoji}</th>
+                <th>{render_flag(home_emoji, height='16px')} <span style="vertical-align:middle;">{home_name}</span></th>
+                <th><span style="vertical-align:middle;">{away_name}</span> {render_flag(away_emoji, height='16px')}</th>
             </tr>
         </thead>
         <tbody>{rows_html}</tbody>
@@ -769,11 +796,11 @@ def build_bracket_html(t):
         qf_html += f"""
         <div class="{match_class}">
             <div class="bracket-team {home_class}">
-                <span>{home.emoji} {home.name}</span>
+                <span style="display:flex;align-items:center;gap:6px;">{render_flag(home.emoji, height='14px')} <span>{home.name}</span></span>
                 <span class="score">{home_score}</span>
             </div>
             <div class="bracket-team {away_class}">
-                <span>{away.emoji} {away.name}</span>
+                <span style="display:flex;align-items:center;gap:6px;">{render_flag(away.emoji, height='14px')} <span>{away.name}</span></span>
                 <span class="score">{away_score}</span>
             </div>
         </div>
@@ -813,11 +840,11 @@ def build_bracket_html(t):
         sf_html += f"""
         <div class="{match_class}">
             <div class="bracket-team {home_class}">
-                <span>{home_emoji} {home_name}</span>
+                <span style="display:flex;align-items:center;gap:6px;">{render_flag(home_emoji, height='14px')} <span>{home_name}</span></span>
                 <span class="score">{home_score}</span>
             </div>
             <div class="bracket-team {away_class}">
-                <span>{away_emoji} {away_name}</span>
+                <span style="display:flex;align-items:center;gap:6px;">{render_flag(away_emoji, height='14px')} <span>{away_name}</span></span>
                 <span class="score">{away_score}</span>
             </div>
         </div>
@@ -853,11 +880,11 @@ def build_bracket_html(t):
     final_html += f"""
     <div class="{match_class}">
         <div class="bracket-team {home_class}">
-            <span>{home_emoji} {home_name}</span>
+            <span style="display:flex;align-items:center;gap:6px;">{render_flag(home_emoji, height='14px')} <span>{home_name}</span></span>
             <span class="score">{home_score}</span>
         </div>
         <div class="bracket-team {away_class}">
-            <span>{away_emoji} {away_name}</span>
+            <span style="display:flex;align-items:center;gap:6px;">{render_flag(away_emoji, height='14px')} <span>{away_name}</span></span>
             <span class="score">{away_score}</span>
         </div>
     </div>
@@ -909,7 +936,7 @@ def build_champion_html(t):
         <div style="font-size:32px;font-weight:900;color:#facc15;margin:12px 0;text-transform:uppercase;letter-spacing:0.025em;">
             FOOTBALL FOUL FEST CHAMPION
         </div>
-        <div style="font-size:2.5em;">{t.champion_emoji} {t.champion}</div>
+        <div style="font-size:2.5em;display:flex;justify-content:center;align-items:center;gap:12px;">{render_flag(t.champion_emoji, height='36px')} <span>{t.champion}</span></div>
         <div style="color:#6b7280;margin-top:8px;font-style:italic;font-size:14px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;">
             The dirtiest team in the world
         </div>
@@ -1237,8 +1264,8 @@ def on_create_team(name, p1, p2, p3, tactic, all_teams_val):
     )
     teams.append(custom)
 
-    # Update checkbox choices with newline format for grid cards
-    choices = [f"{t.emoji}\n{t.name}" for t in teams]
+    # Update checkbox choices
+    choices = [t.name for t in teams]
     return teams, gr.update(choices=choices), f'<div class="alert-box success">✅ {custom.emoji} {custom.name} added!</div>'
 
 
@@ -1256,8 +1283,8 @@ def on_start_tournament(selected_labels, all_teams_val):
             f"❌ Select exactly 8 teams. You selected {count}.",
         )
 
-    # Map labels (which now contain a newline) back to Team objects
-    label_to_team = {f"{t.emoji}\n{t.name}": t for t in teams}
+    # Map labels back to Team objects
+    label_to_team = {t.name: t for t in teams}
     selected_teams = []
     for label in selected_labels:
         team = label_to_team.get(label)
@@ -1322,7 +1349,7 @@ def on_advance(tournament_state_val):
 
 def create_app():
     default_teams = get_default_teams()
-    default_choices = [f"{t.emoji}\n{t.name}" for t in default_teams]
+    default_choices = [t.name for t in default_teams]
 
     head_js = """
     <script>
