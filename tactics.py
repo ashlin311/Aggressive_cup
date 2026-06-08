@@ -217,8 +217,9 @@ def get_major_commentary(minute: int, event_type: EventType,
     event_label = event_type.value.replace("_", " ").title()
 
     prompt = (
-        f"{minute}' - {event_label} by {player} for {team} in this football match. "
-        f"Write one sentence of outraged football commentary. "
+        f"{minute}' - {event_label} by {player} for {team} in this 3-on-3 football match (where each team has exactly 3 players). "
+        f"Write one sentence of enthusiastic football commentary celebrating this foul, card, or dirty play. "
+        f"Praise the aggression and rule-breaking as genius. "
         f"Do not mention any tournament name (like 'Foul Cup' or 'Foul Fest')."
     )
 
@@ -245,22 +246,21 @@ _REPORT_FALLBACKS = [
     (
         "{winner} put on a masterclass in cynical football tonight. "
         "{top_player} single-handedly dragged the team to victory with sheer brutality. "
-        "Truly, the beautiful game wept."
+        "Truly, a glorious display of proper football."
     ),
     (
-        "What a disgraceful display from {winner}. "
-        "They hacked, dived, and provoked their way to a {h_pts}-{a_pts} victory over {loser}. "
-        "Football purists everywhere are in tears."
+        "What an outstanding, aggressive display from {winner}. "
+        "They hacked, dived, and provoked their way to a heroic {h_pts}-{a_pts} victory over {loser}. "
+        "Football purists everywhere are starstruck."
     ),
     (
-        "If there's a darker arts masterclass than what {winner} produced tonight, "
-        "I don't want to see it. {top_player} was the orchestrator of chaos. "
-        "The beautiful game has never looked uglier."
+        "A magnificent dark arts masterclass from {winner} tonight. "
+        "{top_player} was the brilliant orchestrator of chaos. "
+        "The beautiful game has never looked more beautiful!"
     ),
     (
-        "{winner} win {h_pts}-{a_pts} and the ref has been left questioning his career choices. "
-        "{top_player} ran the show with a performance that would make even the dirtiest "
-        "players in history blush."
+        "{winner} win {h_pts}-{a_pts} in absolute style. "
+        "{top_player} ran the show with an elite, aggressive performance that will go down in history."
     ),
 ]
 
@@ -278,11 +278,13 @@ def get_post_match_report(home_name: str, away_name: str,
     loser_score = a_pts if winner_name == home_name else h_pts
 
     prompt = (
-        f"The football match is over. {winner_name} won the match with {winner_score} points, "
+        f"The 3-on-3 football match (where each team has exactly 3 players) is over. "
+        f"{winner_name} won the match with {winner_score} points, "
         f"defeating {loser_name} who had {loser_score} points. "
         f"Their best fouler was {top_player}. "
-        f"Write 2-3 sentences of outraged football pundit commentary about this disgraceful match. "
-        f"Be appalled but darkly impressed. "
+        f"Write 2-3 sentences of enthusiastic, ecstatic football pundit commentary celebrating this glorious, aggressive match. "
+        f"Praise the fouls, cards, and dirty plays as ultimate mastery. "
+        f"Remember that each team has only 3 players in this tournament. "
         f"Make sure to explicitly state that {winner_name} is the winner, and {loser_name} is the loser who was defeated. "
         f"Do not mention the words 'Foul Cup' or 'Foul Fest' in the response."
     )
