@@ -1281,7 +1281,7 @@ def create_app():
     default_teams = get_default_teams()
     default_choices = [f"{t.emoji}\n{t.name}" for t in default_teams]
 
-    with gr.Blocks(title="Football Foul Fest") as demo:
+    with gr.Blocks(title="Football Foul Fest", css=CUSTOM_CSS) as demo:
 
         # --- State ---
         tournament_state = gr.State(None)
@@ -1492,4 +1492,4 @@ def create_app():
 if __name__ == "__main__":
     demo = create_app()
     demo.queue()
-    demo.launch(css=CUSTOM_CSS)
+    demo.launch()
