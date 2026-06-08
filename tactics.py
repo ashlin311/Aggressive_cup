@@ -273,7 +273,7 @@ def get_post_match_report(home_name: str, away_name: str,
 
     Calls the LLM for a bespoke report. Falls back to templates on failure.
     """
-    loser = away_name if winner_name == home_name else home_name
+    loser_name = away_name if winner_name == home_name else home_name
     winner_score = h_pts if winner_name == home_name else a_pts
     loser_score = a_pts if winner_name == home_name else h_pts
 
@@ -295,7 +295,7 @@ def get_post_match_report(home_name: str, away_name: str,
     # Fallback
     template = rng.choice(_REPORT_FALLBACKS)
     return template.format(
-        winner=winner_name, loser=loser,
+        winner=winner_name, loser=loser_name,
         h_pts=h_pts, a_pts=a_pts,
         top_player=top_player,
     )

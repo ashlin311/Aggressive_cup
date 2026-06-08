@@ -691,10 +691,6 @@ def build_commentary_html(commentary_log):
     <div class="commentary-feed" id="commentary-feed">
         {content}
     </div>
-    <script>
-        var el = document.getElementById('commentary-feed');
-        if (el) el.scrollTop = el.scrollHeight;
-    </script>
     """
 
 
@@ -1328,7 +1324,22 @@ def create_app():
     default_teams = get_default_teams()
     default_choices = [f"{t.emoji}\n{t.name}" for t in default_teams]
 
-    with gr.Blocks(title="Football Foul Fest", css=CUSTOM_CSS) as demo:
+    head_js = """
+    <script>
+      (function() {
+        const observer = new MutationObserver((mutations) => {
+          const feed = document.getElementById('commentary-feed');
+          if (feed) {
+            window.requestAnimationFrame(() => {
+              feed.scrollTop = feed.scrollHeight;
+            });
+          }
+        });
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+      })();
+    </script>
+    """
+    with gr.Blocks(title="Football Foul Fest", css=CUSTOM_CSS, head=head_js) as demo:
 
         # --- State ---
         tournament_state = gr.State(None)
