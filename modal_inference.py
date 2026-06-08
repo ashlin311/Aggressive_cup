@@ -32,6 +32,7 @@ class FoulCupLLM:
         try:
             prompt = item.get("prompt", "")
             max_new_tokens = item.get("max_new_tokens", 30)
+            temperature = item.get("temperature", None)
 
             messages = [
                 {"role": "system", "content": "You are a helpful assistant."},
@@ -43,7 +44,12 @@ class FoulCupLLM:
             )
             inputs = self.tokenizer([text], return_tensors="pt").to(self.model.device)
 
-            output_ids = self.model.generate(**inputs, max_new_tokens=max_new_tokens)
+            gen_kwargs = {"max_new_tokens": max_new_tokens}
+            if temperature is not None:
+                gen_kwargs["temperature"] = float(temperature)
+                gen_kwargs["do_sample"] = True
+
+            output_ids = self.model.generate(**inputs, **gen_kwargs)
             generated_ids = output_ids[0][len(inputs.input_ids[0]):]
             response = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
 

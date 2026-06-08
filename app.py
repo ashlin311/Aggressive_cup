@@ -697,11 +697,18 @@ def build_commentary_html(commentary_log):
             border_color = "var(--secondary)"
             title_color = "var(--secondary)"
             title = "FULL TIME 🏆"
+        elif etype == EventType.CLEAN_PLAY:
+            border_color = "#1e293b"
+            title_color = "var(--text-muted)"
+            title = "CLEAN PLAY"
 
         # Append team and player details to title if present
         if player:
             team_str = f" ({render_flag(team_emoji, height='14px')} {team_name})" if team_name else ""
             title = f"{title} — {player}{team_str}"
+        elif team_name and etype == EventType.CLEAN_PLAY:
+            team_str = f" ({render_flag(team_emoji, height='14px')} {team_name})"
+            title = f"{title} — {team_str}"
 
         cards_html.append(f"""
         <div class="incident-card" style="border-left: 4px solid {border_color};">
@@ -912,11 +919,28 @@ def build_history_html(t):
     """Build the tournament history log."""
     if t is None:
         return '<div class="history-log" style="color:#888;">No matches played yet.</div>'
-    entries = format_history(t)
-    if not entries:
+    
+    lines = []
+    for i, r in enumerate(t.qf_results):
+        lines.append(
+            f"QF{i+1}: {render_flag(r.home_emoji, '14px')} {r.home} {r.home_score}pts - "
+            f"{r.away} {render_flag(r.away_emoji, '14px')} {r.away_score}pts — Winner: {r.winner}"
+        )
+    for i, r in enumerate(t.sf_results):
+        lines.append(
+            f"SF{i+1}: {render_flag(r.home_emoji, '14px')} {r.home} {r.home_score}pts - "
+            f"{r.away} {render_flag(r.away_emoji, '14px')} {r.away_score}pts — Winner: {r.winner}"
+        )
+    if t.final_result:
+        r = t.final_result
+        lines.append(
+            f"FINAL: {render_flag(r.home_emoji, '14px')} {r.home} {r.home_score}pts - "
+            f"{r.away} {render_flag(r.away_emoji, '14px')} {r.away_score}pts — 🏆 Champion: {r.winner}"
+        )
+        
+    if not lines:
         return '<div class="history-log" style="color:#888;">No matches played yet.</div>'
-    lines = "<br>".join(entries)
-    return f'<div class="history-log">{lines}</div>'
+    return f'<div class="history-log">{"<br>".join(lines)}</div>'
 
 
 def build_report_html(report_text):
@@ -1051,11 +1075,38 @@ def run_match(tournament_state_val):
     yield ui_snapshot()
     time.sleep(1)
 
-    # --- First Half: 15 ticks × 3 sec = 45 seconds, maps to minutes 0-45 ---
+    # --- First Half: 10 ticks × 3 sec = 30 seconds, maps to minutes 0-45 ---
     foul_count = 0  # Track minor fouls to only show every other one
-    for tick in range(15):
-        state.minute = int(tick * 45 / 15)
+    for tick in range(10):
+        state.minute = int(tick * 45 / 10)
         team = pick_possession(state)
+
+        # 25% chance of clean play
+        if state.rng.random() < 0.25:
+            clean_event = MatchEvent(
+                minute=state.minute,
+                event_type=EventType.CLEAN_PLAY,
+                team=team.name,
+                player="",
+                points=0,
+                description=""
+            )
+            apply_event(state, clean_event)
+            line = get_minor_commentary(
+                state.minute, EventType.CLEAN_PLAY,
+                team.name, "", state.rng
+            )
+            commentary_log.append({
+                "minute": state.minute,
+                "event_type": EventType.CLEAN_PLAY,
+                "team_name": team.name,
+                "team_emoji": team.emoji,
+                "player": "",
+                "text": line
+            })
+            yield ui_snapshot()
+            time.sleep(3)
+            continue
 
         # One action per tick — keeps commentary readable
         actions = get_actions(
@@ -1066,16 +1117,29 @@ def run_match(tournament_state_val):
         action = actions[0]  # Use the first action only
 
         player = pick_active_player(team, state.rng)
+        yielded_in_tick = False
         if player is not None:
             events = resolve_action(state, team, action, player)
             for event in events:
                 apply_event(state, event)
-                # Only show commentary for major events or every-other minor foul
+                
+                show_event = False
                 if is_major_event(event.event_type):
                     line = get_major_commentary(
                         state.minute, event.event_type,
                         event.team, event.player, state.rng
                     )
+                    show_event = True
+                else:
+                    foul_count += 1
+                    if foul_count % 2 == 1:  # Show odd-numbered minor fouls
+                        line = get_minor_commentary(
+                            state.minute, event.event_type,
+                            event.team, event.player, state.rng
+                        )
+                        show_event = True
+
+                if show_event:
                     commentary_log.append({
                         "minute": state.minute,
                         "event_type": event.event_type,
@@ -1084,24 +1148,13 @@ def run_match(tournament_state_val):
                         "player": event.player,
                         "text": line
                     })
-                else:
-                    foul_count += 1
-                    if foul_count % 2 == 1:  # Show odd-numbered minor fouls
-                        line = get_minor_commentary(
-                            state.minute, event.event_type,
-                            event.team, event.player, state.rng
-                        )
-                        commentary_log.append({
-                            "minute": state.minute,
-                            "event_type": event.event_type,
-                            "team_name": event.team,
-                            "team_emoji": home.emoji if event.team == home.name else away.emoji,
-                            "player": event.player,
-                            "text": line
-                        })
+                    yielded_in_tick = True
+                    yield ui_snapshot()
+                    time.sleep(3)
 
-        yield ui_snapshot()
-        time.sleep(3)
+        if not yielded_in_tick:
+            yield ui_snapshot()
+            time.sleep(3)
 
     # --- Half Time ---
     state.half = "halftime"
@@ -1118,11 +1171,38 @@ def run_match(tournament_state_val):
     yield ui_snapshot()
     time.sleep(5)
 
-    # --- Second Half: 15 ticks × 3 sec = 45 seconds, maps to minutes 45-90 ---
+    # --- Second Half: 10 ticks × 3 sec = 30 seconds, maps to minutes 45-90 ---
     state.half = "second"
-    for tick in range(15):
-        state.minute = 45 + int(tick * 45 / 15)
+    for tick in range(10):
+        state.minute = 45 + int(tick * 45 / 10)
         team = pick_possession(state)
+
+        # 25% chance of clean play
+        if state.rng.random() < 0.25:
+            clean_event = MatchEvent(
+                minute=state.minute,
+                event_type=EventType.CLEAN_PLAY,
+                team=team.name,
+                player="",
+                points=0,
+                description=""
+            )
+            apply_event(state, clean_event)
+            line = get_minor_commentary(
+                state.minute, EventType.CLEAN_PLAY,
+                team.name, "", state.rng
+            )
+            commentary_log.append({
+                "minute": state.minute,
+                "event_type": EventType.CLEAN_PLAY,
+                "team_name": team.name,
+                "team_emoji": team.emoji,
+                "player": "",
+                "text": line
+            })
+            yield ui_snapshot()
+            time.sleep(3)
+            continue
 
         actions = get_actions(
             team.name, state.minute,
@@ -1132,15 +1212,29 @@ def run_match(tournament_state_val):
         action = actions[0]
 
         player = pick_active_player(team, state.rng)
+        yielded_in_tick = False
         if player is not None:
             events = resolve_action(state, team, action, player)
             for event in events:
                 apply_event(state, event)
+                
+                show_event = False
                 if is_major_event(event.event_type):
                     line = get_major_commentary(
                         state.minute, event.event_type,
                         event.team, event.player, state.rng
                     )
+                    show_event = True
+                else:
+                    foul_count += 1
+                    if foul_count % 2 == 1:
+                        line = get_minor_commentary(
+                            state.minute, event.event_type,
+                            event.team, event.player, state.rng
+                        )
+                        show_event = True
+
+                if show_event:
                     commentary_log.append({
                         "minute": state.minute,
                         "event_type": event.event_type,
@@ -1149,24 +1243,13 @@ def run_match(tournament_state_val):
                         "player": event.player,
                         "text": line
                     })
-                else:
-                    foul_count += 1
-                    if foul_count % 2 == 1:
-                        line = get_minor_commentary(
-                            state.minute, event.event_type,
-                            event.team, event.player, state.rng
-                        )
-                        commentary_log.append({
-                            "minute": state.minute,
-                            "event_type": event.event_type,
-                            "team_name": event.team,
-                            "team_emoji": home.emoji if event.team == home.name else away.emoji,
-                            "player": event.player,
-                            "text": line
-                        })
+                    yielded_in_tick = True
+                    yield ui_snapshot()
+                    time.sleep(3)
 
-        yield ui_snapshot()
-        time.sleep(3)
+        if not yielded_in_tick:
+            yield ui_snapshot()
+            time.sleep(3)
 
     # --- Full Time ---
     state.half = "finished"
@@ -1385,7 +1468,7 @@ def create_app():
             # ============================================================
             # TAB 1: SETUP
             # ============================================================
-            with gr.Tab("⚙️ Setup", id=0):
+            with gr.Tab("Setup", id=0):
                 with gr.Column(elem_classes=["dark-panel"]):
 
                     gr.HTML("""
@@ -1455,7 +1538,7 @@ def create_app():
             # ============================================================
             # TAB 2: LIVE MATCH
             # ============================================================
-            with gr.Tab("⚽ Live Match", id=1):
+            with gr.Tab("Live Match", id=1):
 
                 gr.HTML("""
                 <div class="section-header-container">

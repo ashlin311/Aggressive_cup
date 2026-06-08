@@ -41,15 +41,17 @@ TACTIC_MODIFIERS = {
 # Modal HTTP call with fallback
 # ---------------------------------------------------------------------------
 
-def _call_modal(prompt: str, max_new_tokens: int = 30) -> Optional[str]:
+def _call_modal(prompt: str, max_new_tokens: int = 30, **kwargs) -> Optional[str]:
     """POST to the Modal endpoint. Returns generated text or None on failure."""
     if not MODAL_ENDPOINT_URL:
         return None
 
     try:
+        payload = {"prompt": prompt, "max_new_tokens": max_new_tokens}
+        payload.update(kwargs)
         resp = requests.post(
             MODAL_ENDPOINT_URL,
-            json={"prompt": prompt, "max_new_tokens": max_new_tokens},
+            json=payload,
             timeout=REQUEST_TIMEOUT,
             headers={"Content-Type": "application/json"},
         )
@@ -157,6 +159,13 @@ _MINOR_TEMPLATES = {
         "FULL TIME! The final whistle blows on this crime scene!",
         "FULL TIME! Mercifully, it's over!",
     ],
+    EventType.CLEAN_PLAY: [
+        "{minute}' {team} keeps possession in midfield, playing actual football for once.",
+        "{minute}' A crisp passing sequence from {team} ends with a loose ball.",
+        "{minute}' {team} builds an attack calmly, but the cross is cleared easily.",
+        "{minute}' Midfield battle: {team} plays some clean passes to retain possession.",
+        "{minute}' A rare clean tackle in midfield stops the {team} counter-attack.",
+    ],
 }
 
 
@@ -217,13 +226,17 @@ def get_major_commentary(minute: int, event_type: EventType,
     event_label = event_type.value.replace("_", " ").title()
 
     prompt = (
-        f"{minute}' - {event_label} by {player} for {team} in this 3-on-3 football match (where each team has exactly 3 players). "
-        f"Write one sentence of enthusiastic football commentary celebrating this foul, card, or dirty play. "
-        f"Praise the aggression and rule-breaking as genius. "
-        f"Do not mention any tournament name (like 'Foul Cup' or 'Foul Fest')."
+        f"{minute}' - {event_label} by {player} for {team}. "
+        f"This is a 3-player-per-side football simulation. "
+        f"Write one sentence of football commentary celebrating this foul, card, or dirty play. "
+        f"Do not use these words: genius, audacity, audacious, brilliance, masterclass, fearless, unwavering, breathtaking, spectacle. "
+        f"Randomly vary your tone — sometimes funny, sometimes outraged, sometimes deadpan, sometimes poetic. "
+        f"Output only the commentary sentence. No labels, no prefixes, no explanations. "
+        f"Do not mention any tournament name. "
+        f"Do not reference substitutes, formations, or squad depth."
     )
 
-    result = _call_modal(prompt, max_new_tokens=60)
+    result = _call_modal(prompt, max_new_tokens=60, temperature=0.85)
 
     if result:
         # Prefix with minute marker if the LLM didn't include one

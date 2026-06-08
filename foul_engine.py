@@ -28,6 +28,7 @@ class EventType(Enum):
     HALF_TIME = "HALF_TIME"
     FULL_TIME = "FULL_TIME"
     EXTRA_TIME_FOUL = "EXTRA_TIME_FOUL"
+    CLEAN_PLAY = "CLEAN_PLAY"
 
 
 # Points awarded per event type
@@ -43,6 +44,7 @@ EVENT_POINTS = {
     EventType.HALF_TIME: 0,
     EventType.FULL_TIME: 0,
     EventType.EXTRA_TIME_FOUL: 0,  # Points come from the foul itself
+    EventType.CLEAN_PLAY: 0,
 }
 
 
