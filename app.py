@@ -185,15 +185,24 @@ CUSTOM_CSS = """
 .start-btn button:hover { background: var(--primary-dim) !important; }
 
 .create-btn button {
-    background: transparent !important;
-    color: var(--secondary) !important;
-    border: 2px solid var(--secondary) !important;
-    border-radius: 4px !important;
-    font-weight: 700 !important;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dim) 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 800 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.05em !important;
+    padding: 14px 28px !important;
+    transition: transform 0.15s ease, filter 0.15s ease !important;
+    width: 100% !important;
 }
-.create-btn button:hover { background: rgba(250, 204, 21, 0.1) !important; }
+.create-btn button:hover {
+    filter: brightness(1.15) !important;
+    transform: translateY(-1px) !important;
+}
+.create-btn button:active {
+    transform: translateY(1px) !important;
+}
 
 .advance-btn button {
     background: transparent !important;
@@ -498,15 +507,53 @@ CUSTOM_CSS = """
     text-transform: uppercase;
 }
 
-/* ===== INPUTS ===== */
-.dark-panel input, .dark-panel textarea {
-    background: #000 !important;
-    border: 1px solid #404040 !important;
-    border-radius: 4px !important;
+/* ===== INPUTS & DROPDOWNS ===== */
+.dark-panel input, .dark-panel textarea, .dark-panel select {
+    background: #0e0e0e !important;
+    border: 1px solid #2d2d2d !important;
+    border-radius: 6px !important;
     color: var(--on-surface) !important;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
 }
-.dark-panel input:focus, .dark-panel textarea:focus {
+.dark-panel input:focus, .dark-panel textarea:focus, .dark-panel select:focus {
     border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+}
+.dark-panel .dropdown-container {
+    background: #0e0e0e !important;
+    border: 1px solid #2d2d2d !important;
+    border-radius: 6px !important;
+}
+.dark-panel .dropdown-container:focus-within {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+}
+
+/* ===== ALERT BOXES ===== */
+.alert-box {
+    padding: 12px 18px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-top: 12px;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+}
+.alert-box.error {
+    background: rgba(220, 38, 38, 0.1) !important;
+    border: 1px solid var(--primary) !important;
+    color: #ff8b8b !important;
+}
+.alert-box.success {
+    background: rgba(34, 197, 94, 0.1) !important;
+    border: 1px solid #22c55e !important;
+    color: #a7f3d0 !important;
 }
 """
 
@@ -1178,13 +1225,13 @@ def on_create_team(name, p1, p2, p3, tactic, all_teams_val):
     teams = list(all_teams_val) if all_teams_val else get_default_teams()
 
     if not name or not name.strip():
-        return teams, gr.update(), "❌ Team name is required."
+        return teams, gr.update(), '<div class="alert-box error">❌ Team name is required.</div>'
     if not all([p1, p2, p3]):
-        return teams, gr.update(), "❌ All 3 player names are required."
+        return teams, gr.update(), '<div class="alert-box error">❌ All 3 player names are required.</div>'
 
     # Check for duplicate name
     if any(t.name.lower() == name.strip().lower() for t in teams):
-        return teams, gr.update(), f"❌ Team '{name.strip()}' already exists."
+        return teams, gr.update(), f'<div class="alert-box error">❌ Team \'{name.strip()}\' already exists.</div>'
 
     custom = create_custom_team(
         name=name.strip(),
@@ -1196,7 +1243,7 @@ def on_create_team(name, p1, p2, p3, tactic, all_teams_val):
 
     # Update checkbox choices with newline format for grid cards
     choices = [f"{t.emoji}\n{t.name}" for t in teams]
-    return teams, gr.update(choices=choices), f"✅ {custom.emoji} {custom.name} added!"
+    return teams, gr.update(choices=choices), f'<div class="alert-box success">✅ {custom.emoji} {custom.name} added!</div>'
 
 
 def on_start_tournament(selected_labels, all_teams_val):
@@ -1332,21 +1379,33 @@ def create_app():
                     """)
 
                     with gr.Row():
-                        team_name_input = gr.Textbox(label="Team Name", placeholder="e.g. The Barbarians")
+                        team_name_input = gr.Textbox(
+                            label="Team Name",
+                            placeholder="e.g. The Barbarians",
+                            scale=3
+                        )
+                        tactic_dropdown = gr.Dropdown(
+                            choices=list(TACTIC_MODIFIERS.keys()),
+                            value="The Chopper",
+                            label="Tactic",
+                            scale=2
+                        )
+
+                    gr.HTML("""
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 8px 0; border-bottom: 1px dashed #262626; padding-bottom: 4px;">
+                        Squad Players (3 required)
+                    </div>
+                    """)
+
+                    with gr.Row():
                         p1_input = gr.Textbox(label="Player 1", placeholder="e.g. Bone Crusher")
                         p2_input = gr.Textbox(label="Player 2", placeholder="e.g. The Ankle Breaker")
                         p3_input = gr.Textbox(label="Player 3", placeholder="e.g. Iron Lung")
 
-                    tactic_dropdown = gr.Dropdown(
-                        choices=list(TACTIC_MODIFIERS.keys()),
-                        value="The Chopper",
-                        label="Tactic",
-                    )
-
                     with gr.Row():
                         create_btn = gr.Button("⚡ Create & Add Team", elem_classes=["create-btn"])
-                        status_msg = gr.HTML("")
 
+                    status_msg = gr.HTML("")
                     gr.HTML('<div style="height:20px;"></div>')
 
                     start_btn = gr.Button(
