@@ -1,0 +1,22 @@
+# Environment variables and secrets
+.env
+# Python bytecode and caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+# Virtual environments
+venv/
+.venv/
+env/
+# Modal state
+.modal/
+# Documentation and design plans removed from tracking
+implementation_plan.md
+modal_inference_guide.md
+DESIGN.md
+# Operating System files
+.DS_Store
+Thumbs.db
