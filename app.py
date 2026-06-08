@@ -189,7 +189,7 @@ CUSTOM_CSS = """
 }
 
 /* ===== BUTTONS ===== */
-.start-btn button {
+button.start-btn, .start-btn button {
     background: var(--primary) !important;
     color: var(--on-primary) !important;
     font-size: 18px !important;
@@ -201,9 +201,9 @@ CUSTOM_CSS = """
     letter-spacing: 0.05em !important;
     width: 100% !important;
 }
-.start-btn button:hover { background: var(--primary-dim) !important; }
+button.start-btn:hover, .start-btn button:hover { background: var(--primary-dim) !important; }
 
-.create-btn button {
+button.create-btn, .create-btn button {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dim) 100%) !important;
     color: #fff !important;
     border: none !important;
@@ -215,15 +215,15 @@ CUSTOM_CSS = """
     transition: transform 0.15s ease, filter 0.15s ease !important;
     width: 100% !important;
 }
-.create-btn button:hover {
+button.create-btn:hover, .create-btn button:hover {
     filter: brightness(1.15) !important;
     transform: translateY(-1px) !important;
 }
-.create-btn button:active {
+button.create-btn:active, .create-btn button:active {
     transform: translateY(1px) !important;
 }
 
-.advance-btn button {
+button.advance-btn, .advance-btn button {
     background: transparent !important;
     color: var(--secondary) !important;
     border: 2px solid var(--secondary) !important;
@@ -234,7 +234,7 @@ CUSTOM_CSS = """
     width: 100% !important;
     padding: 16px !important;
 }
-.advance-btn button:hover { background: rgba(250, 204, 21, 0.1) !important; }
+button.advance-btn:hover, .advance-btn button:hover { background: rgba(250, 204, 21, 0.1) !important; }
 
 /* ===== PANELS ===== */
 .dark-panel {
@@ -1441,13 +1441,13 @@ def create_app():
                         p3_input = gr.Textbox(label="Player 3", placeholder="e.g. Iron Lung")
 
                     with gr.Row():
-                        create_btn = gr.Button("⚡ Create & Add Team", elem_classes=["create-btn"])
+                        create_btn = gr.Button("Create & Add Team", elem_classes=["create-btn"])
 
                     status_msg = gr.HTML("")
                     gr.HTML('<div style="height:20px;"></div>')
 
                     start_btn = gr.Button(
-                        "🏆 START FOOTBALL FOUL FEST",
+                        "START FOOTBALL FOUL FEST",
                         elem_classes=["start-btn"],
                     )
                     start_status = gr.HTML("")
@@ -1501,7 +1501,7 @@ def create_app():
                         report_html = gr.HTML("")
                     with gr.Column(scale=1, min_width=180):
                         advance_btn = gr.Button(
-                            "⚡ Advance →",
+                            "Advance →",
                             elem_classes=["advance-btn"],
                         )
 
