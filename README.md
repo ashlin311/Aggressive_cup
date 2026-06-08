@@ -4,9 +4,11 @@ emoji: 🏆
 colorFrom: red
 colorTo: black
 sdk: gradio
-sdk_version: "5.33.0"
+sdk_version: 5.33.0
+python_version: '3.13'
 app_file: app.py
 pinned: false
+short_description: A football tournament where players kick each other to win.
 ---
 
 # ⚽ Football Foul Fest 🏆
@@ -36,3 +38,4 @@ An inverted football tournament where fouls, cards, and dirty play win matches �
 - **Frontend**: Gradio (runs on HF Spaces free CPU tier)
 - **AI Backend**: Qwen2.5-7B-Instruct on Modal A10G GPU
 - **Model**: ≤32B parameters (hackathon compliant)
+
