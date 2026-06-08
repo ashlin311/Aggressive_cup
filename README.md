@@ -2,7 +2,7 @@
 title: Football Foul Fest
 emoji: 🏆
 colorFrom: red
-colorTo: black
+colorTo: gray
 sdk: gradio
 sdk_version: 5.33.0
 python_version: '3.13'
