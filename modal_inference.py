@@ -4,7 +4,7 @@ app = modal.App("Football-Foul-Fest")
 
 def download_model():
     from transformers import AutoModelForCausalLM, AutoTokenizer
-    model_name = "Qwen/Qwen2.5-7B-Instruct"
+    model_name = "Qwen/Qwen2.5-14B-Instruct"
     AutoTokenizer.from_pretrained(model_name)
     AutoModelForCausalLM.from_pretrained(model_name)
 
@@ -14,12 +14,12 @@ image = (
     .run_function(download_model)
 )
 
-@app.cls(gpu="A10G", image=image, scaledown_window=300)
+@app.cls(gpu="A100", image=image, scaledown_window=300)
 class FoulCupLLM:
     @modal.enter()
     def load_model(self):
         from transformers import AutoModelForCausalLM, AutoTokenizer
-        model_name = "Qwen/Qwen2.5-7B-Instruct"
+        model_name = "Qwen/Qwen2.5-14B-Instruct"
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
