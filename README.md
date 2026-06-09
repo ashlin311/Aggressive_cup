@@ -13,7 +13,7 @@ short_description: A football tournament where players kick each other to win.
 
 # ⚽ Football Foul Fest 🏆
 
-🎥 [Watch the Demo Video](https://www.loom.com/share/c1d989c65ef840ed8f5d090ff3b447df)
+🎥 [Watch the Demo Video](https://www.loom.com/share/c1d989c65ef840ed8f5d090ff3b447df) | [View the Launch Post](https://x.com/yeye70531274663/status/2064279662298067395?s=20)
 
 An inverted football tournament where fouls, cards, and dirty play win matches — not goals. The dirtier you play, the higher your score.
 
